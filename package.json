@@ -1,16 +1,16 @@
 {
   "name": "lit-kit",
   "version": "0.0.0",
-  "description": "A starter for creating a TypeScript package.",
-  "homepage": "https://github.com/author/library#readme",
+  "description": "A set of utilities for using lit-html with signals.",
+  "homepage": "https://github.com/duncsully/lit-kit#readme",
   "bugs": {
-    "url": "https://github.com/author/library/issues"
+    "url": "https://github.com/duncsully/lit-kit/issues"
   },
   "license": "MIT",
-  "author": "Author Name <author.name@mail.com>",
+  "author": "duncsully",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/author/library.git"
+    "url": "git+https://github.com/duncsully/lit-kit.git"
   },
   "files": [
     "dist"
@@ -31,12 +31,19 @@
     "prepublishOnly": "vp run build",
     "prepare": "vp config"
   },
+  "dependencies": {
+    "@lit-labs/signals": "^0.3.0"
+  },
   "devDependencies": {
     "@types/node": "^26.1.1",
     "bumpp": "^11.1.0",
+    "lit-html": "^3.3.3",
     "typescript": "^7.0.2",
     "vite": "catalog:",
     "vite-plus": "catalog:"
+  },
+  "peerDependencies": {
+    "lit-html": "^3.3.3"
   },
   "devEngines": {
     "packageManager": {
