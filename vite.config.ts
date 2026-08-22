@@ -20,5 +20,6 @@ export default defineConfig({
   fmt: {},
   test: {
     environment: "happy-dom",
+    setupFiles: ["./tests/vitest.setup.ts"],
   },
 });
