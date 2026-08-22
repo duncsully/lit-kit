@@ -1,10 +1,10 @@
-import { Signal } from "@lit-labs/signals";
 import { bindAllMethods } from "./utils.ts";
+import { Signal, Computed, type SignalOptions } from "@lit-labs/preact-signals";
 
-export class State<T> extends Signal.State<T> {
+export class State<T> extends Signal<T> {
   constructor(
     private _initialValue: T,
-    options?: Signal.Options<T>,
+    options?: SignalOptions<T>,
   ) {
     super(_initialValue, options);
 
@@ -17,10 +17,10 @@ export class State<T> extends Signal.State<T> {
    * @returns
    */
   get(track = true) {
-    return track ? super.get() : Signal.subtle.untrack(() => super.get());
+    return track ? super.value : super.peek();
   }
   set(value: T) {
-    super.set(value);
+    super.value = value;
     return value;
   }
   /**
@@ -55,8 +55,8 @@ export class State<T> extends Signal.State<T> {
   }
 }
 
-export class Memo<T> extends Signal.Computed<T> {
-  constructor(getter: () => T, options?: Signal.Options<T>) {
+export class Memo<T> extends Computed<T> {
+  constructor(getter: () => T, options?: SignalOptions<T>) {
     super(getter, options);
 
     bindAllMethods(this);
@@ -68,7 +68,7 @@ export class Memo<T> extends Signal.Computed<T> {
    * @returns
    */
   get(track = true) {
-    return track ? super.get() : Signal.subtle.untrack(() => super.get());
+    return track ? super.value : super.peek();
   }
 }
 
@@ -87,6 +87,9 @@ function signalProxy<T extends { get(...args: any[]): any }>(sig: T) {
   return new Proxy(func, {
     get(_, prop) {
       return Reflect.get(sig, prop, sig);
+    },
+    set(_, prop, value) {
+      return Reflect.set(sig, prop, value);
     },
     apply(_, __, args) {
       return sig.get.call(sig, ...args);
@@ -109,7 +112,7 @@ function signalProxy<T extends { get(...args: any[]): any }>(sig: T) {
  * count(false) // untracked
  * ```
  */
-export function state<T>(initialValue: T, options?: Signal.Options<T>) {
+export function state<T>(initialValue: T, options?: SignalOptions<T>) {
   return signalProxy(new State(initialValue, options));
 }
 
@@ -126,59 +129,6 @@ export function state<T>(initialValue: T, options?: Signal.Options<T>) {
  * doubled(false) // untracked
  * ```
  */
-export function memo<T>(fn: () => T, options?: Signal.Options<T>) {
+export function memo<T>(fn: () => T, options?: SignalOptions<T>) {
   return signalProxy(new Memo(fn, options));
-}
-
-let needsProcessing = false;
-
-const watcher = new Signal.subtle.Watcher(() => {
-  if (!needsProcessing) {
-    needsProcessing = true;
-    queueMicrotask(processPendingEffects);
-  }
-});
-
-function processPendingEffects() {
-  needsProcessing = false;
-
-  watcher.getPending().forEach((sub) => sub.get());
-  watcher.watch();
-}
-
-export type Effect = () => void | (() => void);
-
-/**
- * Runs the effect, reruns if any tracked signals change, and optionally runs a cleanup function,
- * if returned by the effect, before the next run and when the watcher is stopped.
- * @param effect
- * @returns A stop function
- * @example
- * ```ts
- * const value = state(0);
- * const stop = watch(() => {
- *   console.log("Value is", value());
- *   return () => console.log("Cleanup");
- * });
- * stop();
- * ```
- */
-export function watch(effect: Effect) {
-  let cleanup: (() => void) | void;
-  const computed = new Signal.Computed(
-    () => {
-      cleanup?.();
-      cleanup = effect();
-      return cleanup;
-    },
-    { equals: () => false },
-  );
-
-  watcher.watch(computed);
-  computed.get();
-
-  return () => {
-    cleanup?.();
-    watcher.unwatch(computed);
-  };
 }
