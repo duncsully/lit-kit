@@ -1,6 +1,6 @@
-import { describe, expect, test, vi } from "vite-plus/test";
-import { memo, state, watch } from "../src/signals.ts";
-import { Signal } from "@lit-labs/signals";
+import { describe, expect, test } from "vite-plus/test";
+import { memo, state } from "../src/signals.ts";
+import { Signal, Computed } from "@lit-labs/preact-signals";
 
 describe("state", () => {
   test("initial value is set correctly", () => {
@@ -44,9 +44,9 @@ describe("state", () => {
     expect(s()).toBe(0);
   });
 
-  test("it counts as instance of Signal.State", () => {
+  test("it counts as instance of Preact Signal", () => {
     const s = state(0);
-    expect(s).toBeInstanceOf(Signal.State);
+    expect(s).toBeInstanceOf(Signal);
   });
 });
 
@@ -68,55 +68,8 @@ describe("memo", () => {
     expect(memoized()).toBe(1);
   });
 
-  test("it counts as instance of Signal.Computed", () => {
+  test("it counts as instance of Preact Computed", () => {
     const memoized = memo(() => 42);
-    expect(memoized).toBeInstanceOf(Signal.Computed);
-  });
-});
-
-describe("watch", () => {
-  test("calls immediately", () => {
-    const callback = vi.fn();
-    watch(callback);
-    expect(callback).toHaveBeenCalled();
-  });
-
-  test("reruns on signal changes", async () => {
-    const s = state(0);
-    const callback = vi.fn(() => {
-      s();
-    });
-    const stop = watch(callback);
-    callback.mockClear();
-    s.set(1);
-    await Promise.resolve();
-    expect(callback).toHaveBeenCalled();
-    stop();
-  });
-
-  test("cleanup works", async () => {
-    const s = state(0);
-    const cleanup = vi.fn();
-    const callback = vi.fn(() => {
-      s();
-      return cleanup;
-    });
-    const stop = watch(callback);
-    s.set(1);
-    await Promise.resolve();
-
-    expect(callback).toHaveBeenCalled();
-    expect(cleanup).toHaveBeenCalled();
-
-    cleanup.mockClear();
-    callback.mockClear();
-
-    stop();
-
-    expect(cleanup).toHaveBeenCalled();
-
-    s.set(2);
-
-    expect(callback).not.toHaveBeenCalled();
+    expect(memoized).toBeInstanceOf(Computed);
   });
 });
