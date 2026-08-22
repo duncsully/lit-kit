@@ -1,4 +1,4 @@
-import { effect } from "./html.ts";
+import { effect } from "./directives/effects.ts";
 import { state } from "./signals.ts";
 
 /**
