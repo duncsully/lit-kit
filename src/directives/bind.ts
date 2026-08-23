@@ -39,10 +39,6 @@ export class BindDirective extends Directive {
       const property = part.name;
 
       this.handler = (e: Event) => {
-        console.log(
-          "handler triggered. Value now",
-          (e.target as HTMLElement)?.[property as keyof HTMLElement],
-        );
         signal.value = (e.target as HTMLElement)?.[property as keyof HTMLElement] as T;
       };
       el.addEventListener(event, this.handler);
