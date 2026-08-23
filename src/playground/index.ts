@@ -1,8 +1,11 @@
 import { when } from "../directives/when.ts";
-import { state, memo, effect, html } from "../index.ts";
+import { state, memo, effect, html, context } from "../index.ts";
 import { render } from "lit-html";
 import { urlState } from "../utilitySignals.ts";
 import { bind } from "../directives/bind.ts";
+
+const isDarkTheme = state(false);
+const isDarkThemeContext = context(isDarkTheme);
 
 const MyComponent = () => {
   const count = urlState("count", 0);
@@ -13,10 +16,8 @@ const MyComponent = () => {
     return () => console.log("Running effect cleanup");
   });
 
-  const isCool = state(false);
-  effect(() => {
-    console.log(`isCool is now ${isCool()}`);
-  });
+  const isDarkTheme = state(true);
+  using _ = isDarkThemeContext.provideForScope(isDarkTheme);
   return html`
     <label>
       Count:
@@ -37,8 +38,17 @@ const MyComponent = () => {
         () => html`Count is 5 or less`,
       )}
     </p>
-    <input type="checkbox" .checked=${bind(isCool, "change")} />
+    <label>
+      Dark theme:
+      <input type="checkbox" .checked=${bind(isDarkTheme, "change")} />
+    </label>
+    ${Nested()}
   `;
 };
+
+function Nested() {
+  const isDarkTheme = isDarkThemeContext.current;
+  return html`Nested content with theme: ${() => (isDarkTheme() ? "dark" : "light")}`;
+}
 
 render(MyComponent(), document.body);
