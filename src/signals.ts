@@ -1,5 +1,10 @@
 import { bindAllMethods } from "./utils.ts";
-import { Signal, Computed, type SignalOptions } from "@lit-labs/preact-signals";
+import {
+  Signal,
+  Computed,
+  type SignalOptions,
+  type ReadonlySignal,
+} from "@lit-labs/preact-signals";
 
 export class State<T> extends Signal<T> {
   constructor(
@@ -53,6 +58,13 @@ export class State<T> extends Signal<T> {
     const newValue = args[0];
     return newValue instanceof Function ? this.update(newValue) : this.set(newValue);
   }
+
+  /**
+   * For now only a type helper. In the future may become a real runtime implementation.
+   */
+  toReadonly(): ReadonlyState<T> {
+    return this as ReadonlyState<T>;
+  }
 }
 
 export class Memo<T> extends Computed<T> {
@@ -75,6 +87,8 @@ export class Memo<T> extends Computed<T> {
 type CallableSignal<T extends { get(...args: any[]): any }> = T & {
   (...args: Parameters<T["get"]>): ReturnType<T["get"]>;
 };
+
+export type ReadonlyState<T> = CallableSignal<ReadonlySignal<T> & Pick<State<T>, "get">>;
 
 /**
  * Creates a proxy for a signal that allows it to be called like a function to get its value.
