@@ -1,6 +1,6 @@
 import { batch } from "@lit-labs/preact-signals";
 import { directive, Directive, PartType, type PartInfo } from "lit-html/directive.js";
-import type { TemplateFunction } from "./types.ts";
+import type { TemplateFunction } from "../types.ts";
 
 export class BatchDirective extends Directive {
   constructor(partInfo: PartInfo) {

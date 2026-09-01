@@ -1,6 +1,6 @@
 import { Directive, type PartInfo, PartType, directive } from "lit-html/async-directive.js";
 import { Signal, watch, computed } from "@lit-labs/preact-signals";
-import type { TemplateFunction } from "./types.ts";
+import type { TemplateFunction } from "../types.ts";
 import { Memo, State } from "../signals.ts";
 
 export class MemoizeDirective extends Directive {

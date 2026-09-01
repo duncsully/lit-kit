@@ -1,7 +1,7 @@
 import { noChange } from "lit-html";
 import { AsyncDirective, directive } from "lit-html/async-directive.js";
 import { effect as unboundEffect } from "@lit-labs/preact-signals";
-import type { TemplateFunction } from "./types.ts";
+import type { TemplateFunction } from "../types.ts";
 
 export type Effect = () => void | (() => void);
 
