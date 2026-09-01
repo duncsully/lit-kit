@@ -17,3 +17,17 @@ test("withAutoMemos should wrap functions in memos and watch them", async () => 
 
   expect(screen.getByText("hello")).toBeInTheDocument();
 });
+
+test("withAutoMemos works with signal getters", async () => {
+  const html = withAutoMemos(coreHtml);
+  const value = state("hi");
+  const component = () => html`<p>${value.get}</p>`;
+  render(component(), window.document.body);
+
+  expect(screen.getByText("hi")).toBeInTheDocument();
+
+  value.set("hello");
+  await Promise.resolve();
+
+  expect(screen.getByText("hello")).toBeInTheDocument();
+});

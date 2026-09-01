@@ -1,3 +1,4 @@
+import { MemoizeDirective } from "./directives/memoize.ts";
 import { bindAllMethods } from "./utils.ts";
 import {
   Signal,
@@ -14,6 +15,10 @@ export class State<T> extends Signal<T> {
     super(_initialValue, options);
 
     bindAllMethods(this);
+    // Short circuits the case where passing the getter in for a signal would redundantly create
+    // a memo signal around it. This allows passing around the getter for a "readonly" signal if
+    // no other methods are needed.
+    MemoizeDirective.signalCache.set(this.get, this);
   }
 
   /**
@@ -72,6 +77,9 @@ export class Memo<T> extends Computed<T> {
     super(getter, options);
 
     bindAllMethods(this);
+    // Short circuits the case where passing the getter in for a signal would redundantly create
+    // a memo signal around it.
+    MemoizeDirective.signalCache.set(this.get, this);
   }
 
   /**
