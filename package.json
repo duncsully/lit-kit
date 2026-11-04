@@ -47,7 +47,7 @@
     "happy-dom": "^20.12.0",
     "lit-html": "^3.3.3",
     "typescript": "^7.0.2",
-    "vite": "npm:@voidzero-dev/vite-plus-core@0.2.9",
+    "vite": "catalog:",
     "vite-plus": "catalog:"
   },
   "peerDependencies": {
