@@ -1,3 +1,4 @@
+import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vite-plus";
 
 export default defineConfig({
@@ -19,8 +20,14 @@ export default defineConfig({
   },
   fmt: {},
   test: {
-    environment: "happy-dom",
-    setupFiles: ["./tests/vitest.setup.ts"],
     globals: true,
+    // We use the navigation API which hasn't been implemented in mock environments
+    // at the time of writing, so we enable browser testing instead.
+    browser: {
+      enabled: true,
+      provider: playwright(),
+      // https://vitest.dev/config/browser/playwright
+      instances: [{ browser: "chromium" }],
+    },
   },
 });

@@ -31,7 +31,8 @@
   "scripts": {
     "build": "vp pack",
     "dev": "vp pack --watch",
-    "test": "vp test",
+    "test": "vp test --browser.headless",
+    "test:ui": "vp test --watch",
     "check": "vp check",
     "prepare": "vp config && vp run build"
   },
@@ -43,12 +44,14 @@
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/user-event": "^14.6.6",
     "@types/node": "^26.4.0",
+    "@vitest/browser-playwright": "^5.1.0",
     "bumpp": "^11.1.0",
     "happy-dom": "^20.12.0",
     "lit-html": "^3.3.3",
     "typescript": "^7.0.2",
     "vite": "catalog:",
-    "vite-plus": "catalog:"
+    "vite-plus": "catalog:",
+    "vitest-browser-lit": "^1.0.1"
   },
   "peerDependencies": {
     "lit-html": "^3.3.3"
