@@ -1,7 +1,7 @@
 export * from "./signals.ts";
 export * from "./utilitySignals.ts";
 export * from "./html.ts";
-export * from "./context.ts";
+export { context } from "./context.ts";
 export { Router } from "./router.ts";
 export * from "./directives/effects.ts";
 export * from "./directives/memoize.ts";
