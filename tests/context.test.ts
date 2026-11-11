@@ -1,4 +1,4 @@
-import { context } from "../src/context.ts";
+import { bulkProvide, context, getAllContextValues } from "../src/context.ts";
 
 test("context provides default value", () => {
   const myContext = context("default");
@@ -27,4 +27,29 @@ test("context.provide provides value for callback and returns result", () => {
   });
   expect(result).toBe("new value");
   expect(myContext.current).toBe("default");
+});
+
+test("getAllContextValues returns map of active context values", () => {
+  const myContext = context("default");
+  const anotherContext = context("another");
+  myContext.provideForScope("new value");
+  const values = getAllContextValues();
+  expect(values.get(myContext)).toBe("new value");
+  // anotherContext is still providing default value, so it is not considered active
+  expect(values.get(anotherContext)).toBeUndefined();
+});
+
+test("bulkProvide provides multiple context values", () => {
+  const myContext = context("default");
+  const anotherContext = context("another");
+  const values = new Map();
+  values.set(myContext, "new value");
+  values.set(anotherContext, "another value");
+
+  bulkProvide(values, () => {
+    expect(myContext.current).toBe("new value");
+    expect(anotherContext.current).toBe("another value");
+  });
+  expect(myContext.current).toBe("default");
+  expect(anotherContext.current).toBe("another");
 });

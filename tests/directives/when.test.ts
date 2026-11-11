@@ -2,6 +2,7 @@ import { html, render } from "lit-html";
 import { screen } from "@testing-library/dom";
 import { when } from "../../src/directives/when.ts";
 import { state } from "../../src/signals.ts";
+import { context } from "../../src/index.ts";
 
 test("when directive renders first template when condition is true", () => {
   const condition = () => true;
@@ -39,4 +40,24 @@ test("when directive watches changes", () => {
 
   value.set(true);
   expect(screen.getByText("Condition is true")).toBeInTheDocument();
+});
+
+test("when directive reprovides contexts", () => {
+  const c = context("default");
+  const condition = state(true);
+
+  render(
+    c.provide(
+      "different",
+      () =>
+        html`${when(
+          condition,
+          () => html`<p>Does not matter</p>`,
+          () => html`<p>${c.current}</p>`,
+        )}`,
+    ),
+    window.document.body,
+  );
+  condition.set(false);
+  expect(screen.getByText("different")).toBeInTheDocument();
 });

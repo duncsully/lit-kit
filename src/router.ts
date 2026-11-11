@@ -3,6 +3,7 @@ import { Memo, memo, state, type ReadonlyState } from "./signals.ts";
 import { html } from "./html.ts";
 import { effect } from "./directives/effects.ts";
 import { cache } from "lit-html/directives/cache.js";
+import { getAllContextValues, withBulkProvide } from "./context.ts";
 
 /**
  * Router component for choosing a route based on an active path. Defaults to using the current browser path.
@@ -76,7 +77,9 @@ export function Router<T extends RouteMap<K>, K>(
     }, {});
   };
 
-  return html`${() => cache(routeMap[activeRoute()]?.(createParams()) ?? nothing)}`;
+  const contextValuesMap = getAllContextValues();
+
+  return html`${withBulkProvide(contextValuesMap, () => cache(routeMap[activeRoute()]?.(createParams()) ?? nothing))}`;
 }
 
 const currentPath = state(window.location.pathname);
