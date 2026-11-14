@@ -1,9 +1,9 @@
 import { nothing, type HTMLTemplateResult } from "lit-html";
-import { Memo, memo, state, type ReadonlyState } from "./signals.ts";
-import { html } from "./html.ts";
-import { effect } from "./directives/effects.ts";
+import { Memo, memo, state, type ReadonlyState } from "../signals.ts";
+import { html } from "../html.ts";
+import { effect } from "../directives/effects.ts";
 import { cache } from "lit-html/directives/cache.js";
-import { getAllContextValues, withBulkProvide } from "./context.ts";
+import { getAllContextValues, withBulkProvide } from "../context.ts";
 
 /**
  * Router component for choosing a route based on an active path. Defaults to using the current browser path.
@@ -175,7 +175,7 @@ type ParamMap<T extends string> = {
       : { 0: ReadonlyState<string> }
     : {});
 
-type RouteMap<T> = {
+export type RouteMap<T> = {
   [K in keyof T & string]: T[K] extends (props: ParamMap<K>) => HTMLTemplateResult
     ? (props: ParamMap<K>) => HTMLTemplateResult
     : never;

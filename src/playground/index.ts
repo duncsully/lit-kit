@@ -3,7 +3,7 @@ import { state, memo, effect, html, context } from "../index.ts";
 import { render } from "lit-html";
 import { urlState } from "../utilitySignals.ts";
 import { bind } from "../directives/bind.ts";
-import { Router } from "../router.ts";
+import { Router } from "../router/router.ts";
 
 // This is a mess of my personal testing, not at all intended to demonstrate best practices
 // or even recommended usage

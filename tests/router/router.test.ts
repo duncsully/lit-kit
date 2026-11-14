@@ -1,9 +1,9 @@
 import { render } from "vitest-browser-lit";
-import { html } from "../src/html.ts";
-import { Router } from "../src/router.ts";
-import { state } from "../src/signals.ts";
+import { html } from "../../src/html.ts";
+import { Router } from "../../src/router/router.ts";
+import { state } from "../../src/signals.ts";
 import { userEvent } from "@testing-library/user-event";
-import { context } from "../src/context.ts";
+import { context } from "../../src/context.ts";
 
 describe("Router", () => {
   it("should render the correct route and handle navigation", async () => {
