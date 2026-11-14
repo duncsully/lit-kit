@@ -4,6 +4,7 @@ import { html } from "../html.ts";
 import { effect } from "../directives/effects.ts";
 import { cache } from "lit-html/directives/cache.js";
 import { getAllContextValues, withBulkProvide } from "../context.ts";
+import { isSignal } from "../utils.ts";
 
 /**
  * Router component for choosing a route based on an active path. Defaults to using the current browser path.
@@ -50,14 +51,14 @@ export function Router<T extends RouteMap<K>, K>(
   pathOrRouteMap: T | ReadonlyState<string | undefined>,
   routeMap: T = pathOrRouteMap as T,
 ) {
-  const path = typeof pathOrRouteMap === "function" ? pathOrRouteMap : setupRouting();
+  const path = isSignal(pathOrRouteMap) ? pathOrRouteMap : setupRouting();
   const sortedRoutes = toSortedRoutes(Object.keys(routeMap));
 
   const activeRoute = memo(
     () =>
       sortedRoutes.find((p) => {
         const pattern = new URLPattern({ pathname: p });
-        return pattern.test({ pathname: path() });
+        return pattern.test({ pathname: path.value });
       }) as keyof typeof routeMap & string,
   );
 
@@ -66,7 +67,7 @@ export function Router<T extends RouteMap<K>, K>(
   // themselves should be reactive to changes in the compared path.
   const createParams = () => {
     const pattern = new URLPattern({ pathname: activeRoute(false) });
-    const match = memo(() => pattern.exec({ pathname: path() }));
+    const match = memo(() => pattern.exec({ pathname: path.value }));
     const groups = match(false)?.pathname.groups ?? {};
 
     return Object.keys(groups).reduce<Record<string, Memo<string | undefined>>>((acc, key) => {
