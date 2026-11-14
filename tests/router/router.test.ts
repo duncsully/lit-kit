@@ -4,6 +4,7 @@ import { Router } from "../../src/router/router.ts";
 import { state } from "../../src/signals.ts";
 import { userEvent } from "@testing-library/user-event";
 import { context } from "../../src/context.ts";
+import { signal } from "@lit-labs/preact-signals";
 
 describe("Router", () => {
   it("should render the correct route and handle navigation", async () => {
@@ -65,7 +66,8 @@ describe("Router", () => {
   });
 
   it("can accept an arbitrary path signal", async () => {
-    const path = state("/different");
+    // It doesn't matter if they don't use our wrapper signal and uses Preact's signal directly.
+    const path = signal("/different");
     const result = render(
       Router(path, {
         "/": () => html`<p>Home</p>`,

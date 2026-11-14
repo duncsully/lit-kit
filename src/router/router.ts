@@ -1,5 +1,5 @@
 import { nothing, type HTMLTemplateResult } from "lit-html";
-import { Memo, memo, state, type ReadonlyState } from "../signals.ts";
+import { Memo, memo, state, type ReadonlyState, type Signal } from "../signals.ts";
 import { html } from "../html.ts";
 import { effect } from "../directives/effects.ts";
 import { cache } from "lit-html/directives/cache.js";
@@ -43,12 +43,12 @@ import { isSignal } from "../utils.ts";
  * @returns The component whose path matches the provided path called with the matched parameters.
  */
 export function Router<T extends RouteMap<K>, K>(
-  path: ReadonlyState<string | undefined>,
+  path: Signal<string | undefined>,
   routeMap: T,
 ): HTMLTemplateResult;
 export function Router<T extends RouteMap<K>, K>(routeMap: T): HTMLTemplateResult;
 export function Router<T extends RouteMap<K>, K>(
-  pathOrRouteMap: T | ReadonlyState<string | undefined>,
+  pathOrRouteMap: T | Signal<string | undefined>,
   routeMap: T = pathOrRouteMap as T,
 ) {
   const path = isSignal(pathOrRouteMap) ? pathOrRouteMap : setupRouting();
