@@ -1,3 +1,5 @@
+import { Signal } from "@lit-labs/preact-signals";
+
 export function bindAllMethods<T extends object>(obj: T): T {
   let currentProto = Object.getPrototypeOf(obj);
 
@@ -22,4 +24,13 @@ export function bindAllMethods<T extends object>(obj: T): T {
   }
 
   return obj;
+}
+
+/**
+ * Checks if the given object is a Signal.
+ *
+ * Wrapper because instanceof check isn't ideal and will hopefully be replaced with a more robust solution in the future.
+ */
+export function isSignal(obj: any): obj is Signal<any> {
+  return obj instanceof Signal;
 }
