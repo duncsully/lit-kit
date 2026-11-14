@@ -1,13 +1,13 @@
 import { MemoizeDirective } from "./directives/memoize.ts";
 import { bindAllMethods } from "./utils.ts";
 import {
-  Signal,
+  Signal as PreactSignal,
   Computed,
   type SignalOptions,
   type ReadonlySignal,
 } from "@lit-labs/preact-signals";
 
-export class State<T> extends Signal<T> {
+export class State<T> extends PreactSignal<T> {
   constructor(
     private _initialValue: T,
     options?: SignalOptions<T>,
@@ -154,3 +154,11 @@ export function state<T>(initialValue: T, options?: SignalOptions<T>) {
 export function memo<T>(fn: () => T, options?: SignalOptions<T>) {
   return signalProxy(new Memo(fn, options));
 }
+
+// Abstract the underlying signal implementation to allow for easier swapping if needed.
+// Used for loose type checking for anything that behaves like a signal without requiring
+// our custom signal wrappers.
+/**
+ * Base signal type
+ */
+export type Signal<T> = PreactSignal<T>;
