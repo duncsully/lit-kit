@@ -18,11 +18,11 @@
   "type": "module",
   "exports": {
     ".": "./dist/index.mjs",
-    "./directives/batchEvent": "./dist/directives/batchEvent.mjs",
     "./directives/bind": "./dist/directives/bind.mjs",
     "./directives/effects": "./dist/directives/effects.mjs",
     "./directives/memoize": "./dist/directives/memoize.mjs",
     "./directives/when": "./dist/directives/when.mjs",
+    "./router": "./dist/router/index.mjs",
     "./package.json": "./package.json"
   },
   "publishConfig": {
