@@ -51,15 +51,9 @@ render(MyComponent(), document.body);
 
 ## Features
 
-Features are broken up roughly into three categories:
-
-- Preact signal wrappers for enhanced functionality and ergonomics
-- lit-html directives and wrappers to automatically apply some of those directives to improve ergonomics around using signals in lit-html templates
-- Other utilities for working with signals and lit-html
-
 ### Signals
 
-lit-kit provides two core signal primitives, state and memo.
+lit-kit provides two core signal types: `state` and `memo`. These wrap `signal` and `computed` respectively with additional functionality. You're free to use Preact's signals directly alongside these.
 
 `State` extends Preact's `Signal` class.
 
@@ -108,15 +102,13 @@ doubled(); // The signal itself can be called as a function to use its get metho
 doubled(false);
 ```
 
-### Directives
+### Templates
 
-lit-kit directives fall into roughly two buckets: ones intended to be automatically added by the wrapped `html` template tagging function exported by lit-kit, and then ones that you still call manually.
+lit-kit provides an `html` template tagging function with additional features compared to the standard `html` from lit-html.
 
-#### Automatically applied directives
+Signals or their `.get` method references can be used directly in templates to track their values.
 
-These are automatically applied by their respective `with` functions to the `html` template tagging function exported by lit-kit. In addition, lit-kit's `html` also applies @lit-labs/preact-signals `withWatch` to automatically track any signals passed directly into a template. However, you're free to mix and match which `with` wrappers you would like to apply to the core `html` template tagging function from lit-html.
-
-`memoize`, `withAutoMemos` - Automatically turns non-event functions into memos and batches event handlers. Also allows passing the `.get` method reference into a template to `watch` the signal without creating a redundant memo around it.
+Functions in template values are automatically wrapped in memos and tracked, or batched if they are event handlers.
 
 ```ts
 import { html } from "lit-kit";
@@ -142,7 +134,9 @@ const templateWithEventHandler = html`
 `;
 ```
 
-`effect`, `effects`, `withEffects` - Ties a Preact effect to a template, running the effect when the template mounts and cleaning up the effect when the template dismounts. Note that since "components" don't actually exist, the `effect` function simply binds them to the next immediate template.
+### Effects
+
+`effect` ties an effect to a template, running the effect when the template mounts and whenever a signal tracked inside it updates. If a cleanup function is returned, it will be called before re-running the effect and when the template dismounts. Note that since "components" don't actually exist, the `effect` function simply binds them to the next immediate template.
 
 ```ts
 import { html } from "lit-kit";
@@ -159,11 +153,11 @@ effect(() => {
 const effectedTemplate = html``;
 // Only effects called after `effectedTemplate` will be bound to this template
 const noneffectedTemplate = html``;
-// You can also manually bind functions as effects via the directive manually
+// You can also manually bind functions as effects via the effects directive
 const manualEffectsTemplate = html`<p ${effects(someFunction, anotherFunction)}></p>`;
 ```
 
-#### Manual directives
+### Directives
 
 `bind` - Binds a signal to an element's property.
 
@@ -196,13 +190,56 @@ const resultTemplate = html`
 `;
 ```
 
-### Utils
+### Context
 
-#### Context
+Context allows you to share state and values between components without prop-drilling. lit-kit provides a simple `context` function for creating and using context values.
 
-TODO (API still under development)
+```ts
+import { context } from "lit-kit/context";
 
-#### Router
+const myContext = context("default value");
+
+// Provides a value that never changes
+const staticProvider = html`<div ${myContext.provide("static value")}></div>`;
+
+// Providing a signal will provide the signal's value and subscribe context requesters to
+// changes to the state automatically
+const myContextState = state("initial value");
+const stateProvider = html`<div ${myContext.provide(myContextState)}></div>`;
+
+const Requester = () => {
+  // Regardless of whether provided a static value or a signal, use() will return a signal with the current context value
+  const localContextState = myContext.use();
+  return html`<p>${localContextState}</p>`;
+};
+```
+
+Under the hood context implements the [Context Protocol](https://github.com/webcomponents-cg/community-protocols/blob/main/proposals/context.md) for interoperability. As long as the same keys are used and with expected values, context values can be provided to and consumed from other libraries that implement the protocol.
+
+```ts
+// Optionally you can provide a custom key, such as if you imported the context from another library
+const notMyContext = context("default value", "custom-key");
+
+// You can also use the unbound API directly instead of the `context` helper.
+const myContext = createContext("key"); // No default value
+
+// Provides a value that never changes
+const staticProvider = html`<div ${provide(myContext, "static value")}></div>`;
+
+const contextState = state("initial value");
+// Providing a signal will provide the signal's value and subscribe context requesters to
+// changes to that signal
+const stateProvider = html`<div ${provide(myContext, contextState)}`;
+// This will update contest requesters
+contextState.set("new value");
+
+const Requester = () => {
+  const localContextState = useContext(myContext, "default value");
+  return html`<p>${localContextState}</p>`;
+};
+```
+
+### Router
 
 lit-kit provides a rudimentary router component for handling client-side routing. It accepts an object mapping route patterns to component functions. It leverages the [URLPattern API](https://developer.mozilla.org/en-US/docs/Web/API/URLPattern) to match routes, the [Navigation API](https://developer.mozilla.org/en-US/docs/Web/API/Navigation_API) to intercept navigation events (while a Router is mounted), and signals to render routes only when the active route changes. Changes to the URL will automatically trigger the router to update the active route and route params.
 
