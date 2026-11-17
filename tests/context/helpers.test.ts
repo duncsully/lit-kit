@@ -19,6 +19,10 @@ test("context creates a context API with default value", () => {
   expect(signal2.value).toBe("provider-value");
 });
 
+test("context default keys are unique", () => {
+  expect(context(0).key).not.toBe(context(0).key);
+});
+
 test("context creates a context API with default value and custom key", () => {
   const defaultValue = "default-value";
   const key = "custom-key";
