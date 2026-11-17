@@ -6,7 +6,12 @@ export default defineConfig({
     "*": "vp check --fix",
   },
   pack: {
-    entry: ["./src/index.ts", "./src/directives/*.ts", "./src/router/index.ts"],
+    entry: [
+      "./src/index.ts",
+      "./src/directives/*.ts",
+      "./src/router/index.ts",
+      "./src/context/index.ts",
+    ],
     dts: {
       generator: "tsgo",
     },

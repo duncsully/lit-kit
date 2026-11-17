@@ -1,15 +1,18 @@
 import { when } from "../directives/when.ts";
-import { state, memo, effect, html, context } from "../index.ts";
+import { state, memo, effect, html, context as oldContext } from "../index.ts";
 import { render } from "lit-html";
 import { urlState } from "../utilitySignals.ts";
 import { bind } from "../directives/bind.ts";
 import { Router } from "../router/router.ts";
+import { context } from "../context/helpers.ts";
 
 // This is a mess of my personal testing, not at all intended to demonstrate best practices
 // or even recommended usage
 
 const isDarkTheme = state(false);
-const isDarkThemeContext = context(isDarkTheme);
+const isDarkThemeContext = oldContext(isDarkTheme);
+
+const realContext = context("default value");
 
 const MyComponent = () => {
   const count = urlState("count", 0);
@@ -31,6 +34,8 @@ const MyComponent = () => {
   effect(() => {
     console.log(`Area is now ${area()}`);
   });
+
+  const realContextSignal = state("different");
   const swapDimensions = () => ([width.value, height.value] = [height(), width()]);
   return html`
     <label>
@@ -67,6 +72,10 @@ const MyComponent = () => {
       <input type="checkbox" .checked=${bind(isDarkTheme, "change")} />
     </label>
     ${Nested()}
+    <div ${realContext.provide(realContextSignal)}>
+      <input .value=${bind(realContextSignal)} />
+      ${Consumer()}
+    </div>
     <div>
       <button @click=${() => showRouting.update((v) => !v)}>Toggle Routing</button>
     </div>
@@ -115,6 +124,11 @@ const MyComponent = () => {
 function Nested() {
   const isDarkTheme = isDarkThemeContext.current;
   return html`Nested content with theme: ${() => (isDarkTheme() ? "dark" : "light")}`;
+}
+
+function Consumer() {
+  const value = realContext.use();
+  return html`Consumer received: ${value}`;
 }
 
 render(MyComponent(), document.body);
