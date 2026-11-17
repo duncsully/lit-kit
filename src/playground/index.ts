@@ -1,5 +1,5 @@
 import { when } from "../directives/when.ts";
-import { state, memo, effect, html, context as oldContext } from "../index.ts";
+import { state, memo, effect, html } from "../index.ts";
 import { render } from "lit-html";
 import { urlState } from "../utilitySignals.ts";
 import { bind } from "../directives/bind.ts";
@@ -9,8 +9,7 @@ import { context } from "../context/helpers.ts";
 // This is a mess of my personal testing, not at all intended to demonstrate best practices
 // or even recommended usage
 
-const isDarkTheme = state(false);
-const isDarkThemeContext = oldContext(isDarkTheme);
+const isDarkThemeContext = context(false);
 
 const realContext = context("default value");
 
@@ -24,7 +23,6 @@ const MyComponent = () => {
   });
 
   const isDarkTheme = state(true);
-  using _ = isDarkThemeContext.provideForScope(isDarkTheme);
 
   const showRouting = state(true);
 
@@ -37,7 +35,7 @@ const MyComponent = () => {
 
   const realContextSignal = state("different");
   const swapDimensions = () => ([width.value, height.value] = [height(), width()]);
-  return html`
+  return html`<div ${isDarkThemeContext.provide(isDarkTheme)}>
     <label>
       Width
       <input type="number" .value=${bind(width)} />
@@ -118,11 +116,11 @@ const MyComponent = () => {
           })}
         </div>`,
     )}
-  `;
+  </div>`;
 };
 
 function Nested() {
-  const isDarkTheme = isDarkThemeContext.current;
+  const isDarkTheme = isDarkThemeContext.use();
   return html`Nested content with theme: ${() => (isDarkTheme() ? "dark" : "light")}`;
 }
 

@@ -1,9 +1,7 @@
 import { render } from "vitest-browser-lit";
 import { html } from "../../src/html.ts";
 import { Router } from "../../src/router/router.ts";
-import { state } from "../../src/signals.ts";
 import { userEvent } from "@testing-library/user-event";
-import { context } from "../../src/context.ts";
 import { signal } from "@lit-labs/preact-signals";
 
 describe("Router", () => {
@@ -105,20 +103,5 @@ describe("Router", () => {
     );
     navigation.navigate("/user/123");
     await expect.element(result.getByText("123")).toBeVisible();
-  });
-
-  it("reprovides context values", async () => {
-    const activeRoute = state("/");
-    const c = context<string>("default");
-    const result = render(
-      c.provide("different", () =>
-        Router({
-          "/": html`<p>Does not matter</p>`,
-          "*": () => html`<p>${c.current}</p>`,
-        }),
-      ),
-    );
-    activeRoute.value = "/other";
-    await expect.element(result.getByText("different")).toBeVisible();
   });
 });

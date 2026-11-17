@@ -3,7 +3,6 @@ import { Memo, memo, state, type ReadonlyState, type Signal } from "../signals.t
 import { html } from "../html.ts";
 import { effect } from "../directives/effects.ts";
 import { cache } from "lit-html/directives/cache.js";
-import { getAllContextValues, withBulkProvide } from "../context.ts";
 import { isSignal } from "../utils.ts";
 
 /**
@@ -78,9 +77,7 @@ export function Router<T extends RouteMap<K>, K>(
     }, {});
   };
 
-  const contextValuesMap = getAllContextValues();
-
-  return html`${withBulkProvide(contextValuesMap, () => cache(routeMap[activeRoute()]?.(createParams()) ?? nothing))}`;
+  return html`${() => cache(routeMap[activeRoute()]?.(createParams()) ?? nothing)}`;
 }
 
 const currentPath = state(window.location.pathname);
