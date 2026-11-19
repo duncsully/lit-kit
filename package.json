@@ -44,13 +44,15 @@
     "@testing-library/jest-dom": "^7.0.1",
     "@testing-library/user-event": "^14.6.6",
     "@types/node": "^26.4.0",
-    "@vitest/browser-playwright": "^5.1.0",
+    "@vitest/browser-playwright": "catalog:",
     "bumpp": "^11.1.0",
     "happy-dom": "^20.12.0",
     "lit-html": "^3.3.3",
+    "playwright": "*",
     "typescript": "^7.0.2",
     "vite": "catalog:",
     "vite-plus": "catalog:",
+    "vitest": "catalog:",
     "vitest-browser-lit": "^1.0.1"
   },
   "peerDependencies": {
